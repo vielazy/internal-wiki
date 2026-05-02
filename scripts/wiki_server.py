@@ -78,6 +78,21 @@ def resolve_repository(db_mode: str) -> RepositoryState:
 class WikiRequestHandler(SimpleHTTPRequestHandler):
     repository = RepositoryState(mode="file")
 
+    def _cors_origin(self) -> str:
+        return os.getenv("WIKI_CORS_ORIGIN", "*")
+
+    def _send_cors_headers(self) -> None:
+        origin = self._cors_origin()
+        self.send_header("Access-Control-Allow-Origin", origin)
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Wiki-Token")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Credentials", "true")
+
+    def do_OPTIONS(self) -> None:
+        self.send_response(204)
+        self._send_cors_headers()
+        self.end_headers()
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, directory=str(PROJECT_ROOT), **kwargs)
 
@@ -697,6 +712,7 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
     def respond_json(self, payload: dict[str, object], status: int = 200) -> None:
         body = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
         self.send_response(status)
+        self._send_cors_headers()
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
@@ -708,8 +724,8 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Serve the AI Coding Wiki viewer with file mode or PostgreSQL-backed runtime data.")
-    parser.add_argument("--host", default="127.0.0.1", help="Host to bind.")
-    parser.add_argument("--port", type=int, default=8008, help="Port to bind.")
+    parser.add_argument("--host", default=os.getenv("HOST", "0.0.0.0"), help="Host to bind.")
+    parser.add_argument("--port", type=int, default=int(os.getenv("PORT", "8008")), help="Port to bind.")
     parser.add_argument("--db-mode", choices=("auto", "file", "required"), default="auto", help="auto: dùng PostgreSQL nếu có cấu hình, file: luôn đọc markdown, required: bắt buộc PostgreSQL.")
     parser.add_argument("--dump-bootstrap", action="store_true", help="Print bootstrap JSON once and exit.")
     args = parser.parse_args()
