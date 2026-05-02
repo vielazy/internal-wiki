@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import cgi
 import hashlib
 import json
 import os
@@ -178,17 +177,34 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
         ctype = self.headers.get('Content-Type', '')
         if not ctype.startswith('multipart/form-data'):
             return {}, None, ''
-        fs = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': ctype})
+        boundary = None
+        for part in ctype.split(';'):
+            part = part.strip()
+            if part.startswith('boundary='):
+                boundary = part.split('=', 1)[1].strip('"')
+                break
+        length = int(self.headers.get('Content-Length', '0') or '0')
+        raw = self.rfile.read(length) if length > 0 else b''
         fields: dict[str, str] = {}
         file_bytes: bytes | None = None
         filename = ''
-        for key in fs.keys() if fs.list else []:
-            item = fs[key]
-            if getattr(item, 'filename', None):
-                filename = item.filename or ''
-                file_bytes = item.file.read() if item.file else None
+        if not boundary:
+            return fields, file_bytes, filename
+        delimiter = ('--' + boundary).encode('utf-8')
+        for chunk in raw.split(delimiter):
+            chunk = chunk.strip(b'\r\n')
+            if not chunk or chunk == b'--':
+                continue
+            headers_blob, _, body = chunk.partition(b'\r\n\r\n')
+            headers_text = headers_blob.decode('utf-8', errors='ignore')
+            if 'name="' not in headers_text:
+                continue
+            name = headers_text.split('name="', 1)[1].split('"', 1)[0]
+            if 'filename="' in headers_text:
+                filename = headers_text.split('filename="', 1)[1].split('"', 1)[0]
+                file_bytes = body.rstrip(b'\r\n')
             else:
-                fields[key] = item.value
+                fields[name] = body.decode('utf-8', errors='ignore').rstrip('\r\n')
         return fields, file_bytes, filename
 
     def _session_claims(self, role: str, subject: str) -> dict[str, object]:
@@ -494,14 +510,7 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
         filename = ''
         ctype = self.headers.get('Content-Type', '')
         if ctype.startswith('multipart/form-data'):
-            fs = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': ctype})
-            if fs.list:
-                for item in fs.list:
-                    if getattr(item, 'filename', None):
-                        filename = item.filename or ''
-                        file_bytes = item.file.read() if item.file else None
-                    else:
-                        fields[item.name] = item.value
+            fields, file_bytes, filename = self._read_multipart_body()
         else:
             body = self._read_json_body()
             fields = {k: str(v) for k, v in body.items()}
