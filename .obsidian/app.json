@@ -1,0 +1,14 @@
+{
+  "alwaysUpdateLinks": true,
+  "showUnsupportedFiles": false,
+  "newFileLocation": "current",
+  "attachmentFolderPath": "attachments",
+  "excludedFiles": [
+    "CLAUDE.md",
+    "AGENTS.md",
+    "README.md",
+    "SKILL.md",
+    "_HUONG_DAN.md",
+    "LOG.md"
+  ]
+}

@@ -1,0 +1,48 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Claude Code user config (don't ship user-specific settings)
+.claude/settings.json
+
+# Cursor user config
+.cursor/settings.json
+.cursor/settings.local.json
+
+# Antigravity user config (for users who install to .agent)
+.agent/settings.json
+.agent/settings.local.json
+
+# Logs
+*.log
+logs/

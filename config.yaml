@@ -1,0 +1,175 @@
+# AI Coding Wiki — config.yaml
+# Mục tiêu: Học vibe coding, AI agents, và xây knowledge base có thể scale
+
+wiki_name: "AI Coding Wiki"
+language: "vi"           # tiếng Việt ưu tiên, English cho technical terms
+auto_run_interval: "2h"
+
+# ── TOPICS ──────────────────────────────────────────────────────────────────
+topics:
+
+  - name: "Vibe Coding"
+    description: "Kỹ thuật lập trình với AI làm driver, human làm director"
+    keywords:
+      - vibe coding
+      - AI-assisted coding
+      - prompt-driven development
+      - Claude Code
+      - Cursor
+      - Windsurf
+      - v0
+      - Bolt
+      - Lovable
+    priority: high
+    sources:
+      - https://x.com/karpathy
+      - https://cursor.com/blog
+      - https://docs.anthropic.com
+
+  - name: "AI Agents"
+    description: "Kiến trúc, patterns và implementation của AI agents"
+    keywords:
+      - AI agents
+      - agentic coding
+      - tool use
+      - function calling
+      - multi-agent
+      - agent orchestration
+      - ReAct pattern
+      - Plan-and-Execute
+      - memory systems
+      - agent loop
+    priority: high
+    sources:
+      - https://docs.anthropic.com/en/docs/build-with-claude/agents
+      - https://www.langchain.com/blog
+
+  - name: "Prompt Engineering"
+    description: "Kỹ thuật viết prompt hiệu quả cho LLMs"
+    keywords:
+      - prompt engineering
+      - system prompt
+      - few-shot learning
+      - chain of thought
+      - XML tags
+      - CLAUDE.md
+      - AGENTS.md
+      - context window
+      - prompt templates
+    priority: high
+    sources:
+      - https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering
+
+  - name: "LLM Tools & Platforms"
+    description: "Các công cụ, framework và platform AI coding phổ biến"
+    keywords:
+      - Claude Code
+      - Cursor IDE
+      - Windsurf
+      - GitHub Copilot
+      - v0 by Vercel
+      - Bolt.new
+      - Lovable
+      - Replit AI
+      - MCP protocol
+      - Model Context Protocol
+    priority: medium
+    sources:
+      - https://claude.ai/code
+      - https://cursor.com
+
+  - name: "Knowledge Base & RAG"
+    description: "Xây dựng knowledge base với LLM, markdown, Obsidian và RAG"
+    keywords:
+      - LLM Wiki
+      - knowledge base
+      - RAG
+      - retrieval augmented generation
+      - vector database
+      - embeddings
+      - Obsidian
+      - markdown knowledge base
+      - Karpathy LLM Wiki
+    priority: medium
+    sources:
+      - https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
+
+  - name: "Web & App Development"
+    description: "Stack và patterns để build ứng dụng qua vibe coding"
+    keywords:
+      - Next.js
+      - React
+      - TypeScript
+      - Tailwind CSS
+      - FastAPI
+      - Supabase
+      - full-stack
+      - deployment
+      - Vercel
+      - Docker
+    priority: medium
+
+  - name: "AI Coding Workflows"
+    description: "Quy trình, checklist và best practices khi code với AI"
+    keywords:
+      - AI coding workflow
+      - context management
+      - code review with AI
+      - debugging with AI
+      - refactoring
+      - test-driven development
+      - documentation generation
+    priority: medium
+
+  - name: "Knowledge Ops & Productization"
+    description: "Search, sync, permissions, audit, revision history, và internal wiki operations"
+    keywords:
+      - PostgreSQL search
+      - full-text search
+      - pg_trgm
+      - permissions
+      - audit log
+      - revision history
+      - sync pipeline
+      - backup restore
+      - internal wiki
+      - dashboard
+    priority: medium
+    sources:
+      - https://www.postgresql.org/docs/
+
+# ── DISCOVERY SOURCES ────────────────────────────────────────────────────────
+discovery_sources:
+  - type: web
+    urls:
+      - https://x.com/AnthropicAI
+      - https://x.com/karpathy
+      - https://x.com/cursor_ai
+      - https://blog.anthropic.com
+      - https://docs.anthropic.com/en/docs
+      - https://www.latent.space/
+      - https://www.deeplearning.ai/the-batch/
+      - https://www.postgresql.org/docs/
+
+  - type: github
+    repos:
+      - anthropics/anthropic-cookbook
+      - mduongvandinh/llm-wiki
+      - mckaywrigley/chatbot-ui
+
+# ── WIKI SETTINGS ─────────────────────────────────────────────────────────
+wiki:
+  max_pages_per_topic: 30
+  cross_reference: true
+  detect_contradictions: true
+  language_mix: "vi+en"   # viết tiếng Việt, giữ nguyên technical terms tiếng Anh
+  page_template: "standard"
+  search_mode: "postgresql"
+  source_of_truth: "markdown"
+  obsidian_role: "authoring_and_graph"
+
+# ── OUTPUT SETTINGS ───────────────────────────────────────────────────────
+outputs:
+  save_queries: true
+  daily_digest: true
+  format: markdown

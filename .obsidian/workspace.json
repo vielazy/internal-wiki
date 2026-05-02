@@ -1,0 +1,219 @@
+{
+  "main": {
+    "id": "e49b4a0d0c5d7139",
+    "type": "split",
+    "children": [
+      {
+        "id": "ee1f83e1b50bff02",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "41575f363693d210",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "9c541239b964eedc",
+    "type": "split",
+    "children": [
+      {
+        "id": "944836750f681e70",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d0f1f51a74e6432b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "89efbe6db2ba1066",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "ab78bcbf90fc7050",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "9a97ea922c4f4cc6",
+    "type": "split",
+    "children": [
+      {
+        "id": "6801eb904889057f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b9d4c7a31baf1ca9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "342c21f18d0cca6b",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "bbf9e49644c493bc",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "6305d15f7b8c122e",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "fe7c1baf6365f409",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "41575f363693d210",
+  "lastOpenFiles": [
+    "wiki/syntheses/supabase-rls-vs-app-layer-acl.md",
+    "wiki/syntheses/internal-wiki-architecture-recommendation.md",
+    "wiki/syntheses/wiki-architecture-map.md",
+    "wiki/syntheses/supabase-auth-acl-model.md",
+    "wiki/syntheses/nextjs-fastapi-supabase-decision-guide.md",
+    "wiki/syntheses/supabase-postgresql-search.md",
+    "wiki/syntheses/nextjs-fastapi-supabase-architecture.md",
+    "wiki/tutorials/tdd.md",
+    "wiki/tutorials/debug.md",
+    "wiki/tutorials/review.md",
+    "wiki/concepts/project-priority-plan.md",
+    "PROJECT_PRIORITY_PLAN.md",
+    "outputs/digest-2026-04-28.md",
+    "AI_CODING_WIKI_GUIDE.md",
+    "package.json",
+    "install.sh",
+    "bin/cli.js",
+    "bin",
+    "wiki/agents/tutor-agent.md",
+    "wiki/agents/multi-agent.md",
+    "wiki/agents/anthropic-building-effective-agents.md",
+    "wiki/agents/agent-patterns.md",
+    "skills/llm-wiki/SKILL.md",
+    "raw/videos/2026-04-20-andrej-karpathy-software-is-changing-again.md",
+    "raw/articles/_HUONG_DAN.md",
+    "AGENTS.md",
+    "wiki/INDEX.md",
+    "wiki/syntheses/hybrid-search.md",
+    "Untitled.base",
+    "2026-04-22.md",
+    "Untitled.canvas",
+    "embeddings.md",
+    "docker-compose.yml",
+    "requirements.txt",
+    "scripts/sync_wiki_to_db.py",
+    "scripts/db_init.sql",
+    "scripts/wiki_runtime.py"
+  ]
+}
