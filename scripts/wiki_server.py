@@ -554,39 +554,36 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
             'publicUrl': storage_result.public_url if storage_result else None,
             'signedUrl': storage_result.signed_url if storage_result else None,
         }
-        try:
-            with open_db_connection(self.repository.db_settings) as connection:
-                set_search_path(connection, self.repository.db_settings)
-                with connection.transaction():
-                    artifact_row = connection.execute(
-                        """
-                        INSERT INTO upload_artifacts (uploaded_by, filename, title, topic, content_text, content_hash, duplicate_json, status)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                        RETURNING id
-                        """,
-                        (subject or role, upload_name, title, topic, extracted, artifact_hash, json.dumps(duplicate, ensure_ascii=False), 'received'),
-                    ).fetchone()
-                    artifact_id = int(artifact_row['id']) if artifact_row else None
-                    draft_page = f"drafts/{artifact_hash[:12]}"
-                    draft_payload = json.dumps({**draft, 'storagePath': stored['storagePath'], 'publicUrl': stored['publicUrl'], 'signedUrl': stored['signedUrl']}, ensure_ascii=False)
-                    connection.execute(
-                        """
-                        INSERT INTO wiki_drafts (uploaded_artifact_id, page_id, title, topic, section, visibility, content_hash, draft_json, status)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (page_id) DO UPDATE SET
-                            title = EXCLUDED.title,
-                            topic = EXCLUDED.topic,
-                            section = EXCLUDED.section,
-                            visibility = EXCLUDED.visibility,
-                            content_hash = EXCLUDED.content_hash,
-                            draft_json = EXCLUDED.draft_json,
-                            status = EXCLUDED.status,
-                            updated_at = CURRENT_TIMESTAMP::text
-                        """,
-                        (artifact_id, draft_page, title, topic, 'syntheses', 'internal', artifact_hash, draft_payload, 'draft'),
-                    )
-        except Exception:
-            pass
+        with open_db_connection(self.repository.db_settings) as connection:
+            set_search_path(connection, self.repository.db_settings)
+            with connection.transaction():
+                artifact_row = connection.execute(
+                    """
+                    INSERT INTO upload_artifacts (uploaded_by, filename, title, topic, content_text, content_hash, duplicate_json, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    RETURNING id
+                    """,
+                    (subject or role, upload_name, title, topic, extracted, artifact_hash, json.dumps(duplicate, ensure_ascii=False), 'received'),
+                ).fetchone()
+                artifact_id = int(artifact_row['id']) if artifact_row else None
+                draft_page = f"drafts/{artifact_hash[:12]}"
+                draft_payload = json.dumps({**draft, 'storagePath': stored['storagePath'], 'publicUrl': stored['publicUrl'], 'signedUrl': stored['signedUrl']}, ensure_ascii=False)
+                connection.execute(
+                    """
+                    INSERT INTO wiki_drafts (uploaded_artifact_id, page_id, title, topic, section, visibility, content_hash, draft_json, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (page_id) DO UPDATE SET
+                        title = EXCLUDED.title,
+                        topic = EXCLUDED.topic,
+                        section = EXCLUDED.section,
+                        visibility = EXCLUDED.visibility,
+                        content_hash = EXCLUDED.content_hash,
+                        draft_json = EXCLUDED.draft_json,
+                        status = EXCLUDED.status,
+                        updated_at = CURRENT_TIMESTAMP::text
+                    """,
+                    (artifact_id, draft_page, title, topic, 'syntheses', 'internal', artifact_hash, draft_payload, 'draft'),
+                )
         self.respond_json(stored)
 
     def _handle_wiki_pages(self, parsed) -> None:
@@ -597,10 +594,52 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
         section = str(body.get("section") or "syntheses").strip()
         visibility = str(body.get("visibility") or "internal").strip()
         content = str(body.get("content") or "").strip()
+        tags = [t.strip() for t in str(body.get("tags") or "").split(",") if t.strip()]
         if not title or not content:
             self.respond_json({"error": "title and content are required"}, status=400)
             return
         page_id = str(body.get("pageId") or hashlib.sha256(f"{title}:{content}".encode("utf-8")).hexdigest()[:16])
+        slug = slugify(title)
+        excerpt = content[:280].strip()
+        word_count = len(content.split())
+        heading_rows = []
+        headings_json = json.dumps([], ensure_ascii=False)
+        created_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        with open_db_connection(self.repository.db_settings) as connection:
+            set_search_path(connection, self.repository.db_settings)
+            with connection.transaction():
+                connection.execute(
+                    """
+                    INSERT INTO pages (id, slug, title, topic, section, path, created, updated, confidence, visibility, excerpt, body, word_count, headings_json)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (id) DO UPDATE SET
+                        slug = EXCLUDED.slug,
+                        title = EXCLUDED.title,
+                        topic = EXCLUDED.topic,
+                        section = EXCLUDED.section,
+                        path = EXCLUDED.path,
+                        updated = EXCLUDED.updated,
+                        confidence = EXCLUDED.confidence,
+                        visibility = EXCLUDED.visibility,
+                        excerpt = EXCLUDED.excerpt,
+                        body = EXCLUDED.body,
+                        word_count = EXCLUDED.word_count,
+                        headings_json = EXCLUDED.headings_json
+                    """,
+                    (page_id, slug, title, topic, section, f"{section}/{slug}", created_at, created_at, "draft", visibility, excerpt, content, word_count, headings_json),
+                )
+                connection.execute("DELETE FROM page_tags WHERE page_id = %s", (page_id,))
+                for idx, tag in enumerate(tags):
+                    connection.execute(
+                        "INSERT INTO page_tags (page_id, tag, position) VALUES (%s, %s, %s)",
+                        (page_id, tag, idx),
+                    )
+                connection.execute("DELETE FROM page_sources WHERE page_id = %s", (page_id,))
+                for idx, source in enumerate([f"upload:{page_id}"]):
+                    connection.execute(
+                        "INSERT INTO page_sources (page_id, source, position) VALUES (%s, %s, %s)",
+                        (page_id, source, idx),
+                    )
         result = {
             "pageId": page_id,
             "status": "created",
