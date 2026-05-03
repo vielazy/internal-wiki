@@ -137,6 +137,8 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
             self._handle_chat(parsed); return
         if parsed.path == "/api/tutor":
             self._handle_tutor(parsed); return
+        if parsed.path == "/api/upload-artifacts":
+            self._handle_upload_artifacts(parsed); return
         self.send_error(404, "Not Found")
 
     def _token_from_request(self, parsed) -> str:
