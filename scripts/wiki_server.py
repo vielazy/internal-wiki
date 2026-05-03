@@ -168,9 +168,13 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", "0") or "0")
         if length <= 0:
             return {}
-        raw = self.rfile.read(length).decode("utf-8")
+        raw = self.rfile.read(length)
         try:
-            payload = json.loads(raw) if raw else {}
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return {}
+        try:
+            payload = json.loads(text) if text else {}
         except json.JSONDecodeError:
             return {}
         return payload if isinstance(payload, dict) else {}
