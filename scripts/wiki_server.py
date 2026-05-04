@@ -4,8 +4,10 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 import time
+import unicodedata
 from dataclasses import dataclass
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -35,6 +37,12 @@ from wiki_runtime import (
     set_search_path,
     search_pages,
 )
+
+
+def slugify(text: str) -> str:
+    normalized = unicodedata.normalize("NFKD", str(text))
+    ascii_text = normalized.encode("ascii", "ignore").decode("ascii")
+    return re.sub(r"[^a-z0-9]+", "-", ascii_text.lower()).strip("-") or "page"
 
 
 @dataclass(frozen=True)
