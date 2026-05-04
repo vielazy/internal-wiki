@@ -614,13 +614,14 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
         heading_rows = []
         headings_json = json.dumps([], ensure_ascii=False)
         created_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        synced_at = created_at
         with open_db_connection(self.repository.db_settings) as connection:
             set_search_path(connection, self.repository.db_settings)
             with connection.transaction():
                 connection.execute(
                     """
-                    INSERT INTO pages (id, slug, title, topic, section, path, created, updated, confidence, visibility, excerpt, body, word_count, content_hash, headings_json)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO pages (id, slug, title, topic, section, path, created, updated, synced_at, confidence, visibility, excerpt, body, word_count, content_hash, headings_json)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (id) DO UPDATE SET
                         slug = EXCLUDED.slug,
                         title = EXCLUDED.title,
@@ -628,6 +629,7 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
                         section = EXCLUDED.section,
                         path = EXCLUDED.path,
                         updated = EXCLUDED.updated,
+                        synced_at = EXCLUDED.synced_at,
                         confidence = EXCLUDED.confidence,
                         visibility = EXCLUDED.visibility,
                         excerpt = EXCLUDED.excerpt,
@@ -636,7 +638,7 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
                         content_hash = EXCLUDED.content_hash,
                         headings_json = EXCLUDED.headings_json
                     """,
-                    (page_id, slug, title, topic, section, f"{section}/{slug}", created_at, created_at, "draft", visibility, excerpt, content, word_count, content_hash, headings_json),
+                    (page_id, slug, title, topic, section, f"{section}/{slug}", created_at, created_at, synced_at, "draft", visibility, excerpt, content, word_count, content_hash, headings_json),
                 )
                 connection.execute("DELETE FROM page_tags WHERE page_id = %s", (page_id,))
                 for idx, tag in enumerate(tags):
