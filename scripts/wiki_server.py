@@ -608,6 +608,7 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
             return
         page_id = str(body.get("pageId") or hashlib.sha256(f"{title}:{content}".encode("utf-8")).hexdigest()[:16])
         slug = slugify(title)
+        content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
         excerpt = content[:280].strip()
         word_count = len(content.split())
         heading_rows = []
@@ -618,8 +619,8 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
             with connection.transaction():
                 connection.execute(
                     """
-                    INSERT INTO pages (id, slug, title, topic, section, path, created, updated, confidence, visibility, excerpt, body, word_count, headings_json)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO pages (id, slug, title, topic, section, path, created, updated, confidence, visibility, excerpt, body, word_count, content_hash, headings_json)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (id) DO UPDATE SET
                         slug = EXCLUDED.slug,
                         title = EXCLUDED.title,
@@ -632,9 +633,10 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
                         excerpt = EXCLUDED.excerpt,
                         body = EXCLUDED.body,
                         word_count = EXCLUDED.word_count,
+                        content_hash = EXCLUDED.content_hash,
                         headings_json = EXCLUDED.headings_json
                     """,
-                    (page_id, slug, title, topic, section, f"{section}/{slug}", created_at, created_at, "draft", visibility, excerpt, content, word_count, headings_json),
+                    (page_id, slug, title, topic, section, f"{section}/{slug}", created_at, created_at, "draft", visibility, excerpt, content, word_count, content_hash, headings_json),
                 )
                 connection.execute("DELETE FROM page_tags WHERE page_id = %s", (page_id,))
                 for idx, tag in enumerate(tags):
