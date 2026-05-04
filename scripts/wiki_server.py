@@ -580,7 +580,7 @@ class WikiRequestHandler(SimpleHTTPRequestHandler):
                         content_hash = EXCLUDED.content_hash,
                         draft_json = EXCLUDED.draft_json,
                         status = EXCLUDED.status,
-                        updated_at = CURRENT_TIMESTAMP::text
+                        updated_at = CURRENT_TIMESTAMP
                     """,
                     (artifact_id, draft_page, title, topic, 'syntheses', 'internal', artifact_hash, draft_payload, 'draft'),
                 )
